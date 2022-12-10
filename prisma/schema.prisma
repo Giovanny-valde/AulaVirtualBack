@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model test_courses {
+  c_id                   Int                      @id @default(autoincrement()) @db.UnsignedInt
+  name                   String                   @db.VarChar(100)
+  credits                Int?                     @default(1) @db.SmallInt
+  test_courses_x_student test_courses_x_student[]
+}
+
+model test_courses_x_student {
+  cxs_id        Int           @id @default(autoincrement()) @db.UnsignedInt
+  c_id          Int           @db.UnsignedInt
+  s_id          Int           @db.UnsignedInt
+  test_students test_students @relation(fields: [s_id], references: [s_id], onDelete: Cascade, map: "FK_test_1")
+  test_courses  test_courses  @relation(fields: [c_id], references: [c_id], onDelete: Cascade, map: "FK_test_2")
+
+  @@index([s_id], map: "FK_test_1_idx")
+  @@index([c_id], map: "FK_test_2_idx")
+}
+
+model test_students {
+  s_id                   Int                      @id @default(autoincrement()) @db.UnsignedInt
+  first_name             String                   @db.VarChar(50)
+  last_name              String?                  @db.VarChar(50)
+  lv_id                  Int?                     @db.SmallInt
+  group                  String?                  @db.VarChar(5)
+  email                  String?                  @db.VarChar(100)
+  phone_number           String?                  @db.VarChar(50)
+  geolocation            String?                  @db.VarChar(200)
+  status                 Boolean                  @default(true)
+  test_courses_x_student test_courses_x_student[]
+}
